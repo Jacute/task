@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" charset="UTF-8" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <button><a href="/">Load</a></button>
+        <button><a href="/convert">Convert</a></button>
+    </div>
+
+    <h1>PNG<span style="color: red">2</span>JPG</h1>
+    <p>Какой файл конвертируем?</p>
+    <ul id="files">
+        {% for file in files %}
+            <li><a href="#">{{ file }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <div id="result">
+        
+    </div>
+
+    <script>
+        var files = document.getElementById("files");
+
+        files.addEventListener("click", (event) => {
+            if (event.target.tagName === 'A') {
+                event.preventDefault(); // Отменяем стандартное действие (переход по ссылке)
+                var clickedText = event.target.innerText; // Получаем текст элемента <a>
+                
+                fetch(`/convert?file=${clickedText}`, {
+                    method: 'GET'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var result = document.getElementById('result');
+                    
+                    var text = document.createElement('p');
+                    text.textContent = data.message;
+    
+                    result.appendChild(text);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Обработка ошибки
+                });
+            }
+        });
+    </script>
+</body>
+</html>
